@@ -377,17 +377,8 @@ NSString *const kGPUImageColorSwizzlingFragmentShaderString = SHADER_STRING
 
         CMTime currentSampleTime = CMSampleBufferGetOutputPresentationTimeStamp(audioBuffer);
         
-        if (CMTIME_IS_INVALID(startTime))
-        {
-            runSynchronouslyOnContextQueue(_movieWriterContext, ^{
-                if ((audioInputReadyCallback == NULL) && (assetWriter.status != AVAssetWriterStatusWriting))
-                {
-                    [assetWriter startWriting];
-                }
-                [assetWriter startSessionAtSourceTime:currentSampleTime];
-                startTime = currentSampleTime;
-            });
-        }
+        if (assetWriter.status != AVAssetWriterStatusWriting) return;
+        if (CMTIME_IS_INVALID(startTime)) return;
 
         if (!assetWriterAudioInput.readyForMoreMediaData && _encodingLiveVideo)
         {
